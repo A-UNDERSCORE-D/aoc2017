@@ -1,3 +1,4 @@
+// Package util contains various util methods
 package util
 
 import (
@@ -39,20 +40,29 @@ func Max(a, b int) int {
 }
 
 // MaxOf applies Max to multiple ints, returning the largest of all of them
-func MaxOf(ints ...int) int {
+func MaxOf(ints ...int) (int, int) {
 	switch len(ints) {
 	case 0:
 		panic("no ints specified")
 	case 1:
-		return ints[0]
+		return 0, ints[0]
 	case 2:
-		return Max(ints[0], ints[1])
+		m := Max(ints[0], ints[1])
+		if m == ints[0] {
+			return 0, m
+		}
+		return 1, m
 	default:
 		curMax := ints[0]
-		for _, i := range ints[1:] {
+		curIdx := 0
+		for idx, i := range ints[1:] {
+			oldMax := curMax
 			curMax = Max(curMax, i)
+			if curMax == i && curMax != oldMax {
+				curIdx = idx + 1
+			}
 		}
-		return curMax
+		return curIdx, curMax
 	}
 }
 
@@ -80,7 +90,7 @@ func RoundDown(in float64) int {
 
 // GCD and LCM copied from https://github.com/sotsoguk/adventOfCode2019_go/blob/a10a0ca4a6f6f31770dfca1e234a08f41f0865b8/utils/mathUtils/mathUtils.go#L79 because I am lazy
 
-// GCM Finds the Greatest common Denominator
+// Gcd Finds the Greatest common Denominator
 func Gcd(x, y int64) int64 {
 	for y != 0 {
 		x, y = y, x%y
@@ -88,7 +98,7 @@ func Gcd(x, y int64) int64 {
 	return x
 }
 
-// find Least Common Multiple (LCM) via GCD
+// Lcm finds the Least Common Multiple (LCM) via GCD
 func Lcm(a, b int64, integers ...int64) int64 {
 	result := a * b / Gcd(a, b)
 	for i := 0; i < len(integers); i++ {
